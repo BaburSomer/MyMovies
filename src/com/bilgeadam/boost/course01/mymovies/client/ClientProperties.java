@@ -24,6 +24,23 @@ public class ClientProperties {
 	public String getDBName() {
 		return props.getProperty("DB_NAME");
 	}
+
+	public String getMoviesCSV() {
+		return props.getProperty("MOVIES_FILE");
+	}
+	
+	public String getLinksCSV() {
+		return props.getProperty("LINKS_FILE");
+	}
+	
+	public String getRatingsCSV() {
+		return props.getProperty("RATINGS_FILE");
+	}
+	
+	public String getTagsCSV() {
+		return props.getProperty("TAGS_FILE");
+	}
+
 	public String getDbURL() {
 		// ?user=boost&password=boost"
 		return props.getProperty("CONNECTOR_TYPE") + ":" + props.getProperty("DB_VENDOR") + "://"

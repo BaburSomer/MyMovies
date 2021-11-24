@@ -7,7 +7,9 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import com.bilgeadam.boost.course01.mymovies.client.communication.ServerCommunication;
+import com.bilgeadam.boost.course01.mymovies.client.model.ImportData;
 import com.bilgeadam.boost.course01.mymovies.client.view.Menu;
+import com.bilgeadam.boost.course01.mymovies.database.DatabaseSetup;
 
 public class MyMovieClient {
 	private String id;
@@ -19,13 +21,32 @@ public class MyMovieClient {
 	}
 
 	public static void main(String[] args) {
+		
 		MyMovieClient movieClient = new MyMovieClient();
+		movieClient.checkDatabase();
 		movieClient.connect2Server();
 		try {
 			movieClient.startUI();
 		}
 		catch (IOException ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	private void checkDatabase() {
+		if (!ImportData.isDatabaseInitialized()) {
+			System.err.println("Database is not initialized. Creating it...");
+			 DatabaseSetup setup = new DatabaseSetup();
+			 setup.execute();
+		}
+		else {
+			System.out.println("Database initialized");
+			if (ImportData.isDataLoaded()) {
+				System.out.println("Data is loaded");
+			}
+			else {
+				System.out.println("Data is not loaded");
+			}
 		}
 	}
 
