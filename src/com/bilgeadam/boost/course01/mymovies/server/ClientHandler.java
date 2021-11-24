@@ -52,6 +52,7 @@ public class ClientHandler implements Runnable {
 	}
 
 	private void processRequest(String line) {
+		line = line.trim();
 		if (CommonData.getInstance().isInitializing()) {
 			this.out.println("WAIT: Server has not loaded data yet. Please wait..");
 		}
@@ -59,6 +60,7 @@ public class ClientHandler implements Runnable {
 			CommonData.getInstance().logInfo("Received from client: " + line);
 			if (line.startsWith("INTR:")) {
 				CommonData.getInstance().registerClient(line.substring(5));
+				System.out.println("Number of clients connected: " + CommonData.getInstance().numClients());
 				this.out.println("Welcome " + line.substring(5));
 			}
 			else {

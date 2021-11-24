@@ -250,11 +250,11 @@ public class CommonData {
 		if (yearsMovies == null) {
 			return null;
 		}
-		String retVal = "";
+		StringBuilder builder = new StringBuilder();
 		for (String movieId : yearsMovies) {
-			retVal += this.getMovies().get(movieId) + "|";
+			builder.append(this.getMovies().get(movieId).getOriginalTitle()).append("|");
 		}
-		return retVal;
+		return builder.toString();
 	}
 
 	public void addName(Name name) {

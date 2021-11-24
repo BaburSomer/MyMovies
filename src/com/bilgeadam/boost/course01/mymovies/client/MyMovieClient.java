@@ -1,76 +1,88 @@
 package com.bilgeadam.boost.course01.mymovies.client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Random;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
+import com.bilgeadam.boost.course01.mymovies.client.communication.ServerCommunication;
+import com.bilgeadam.boost.course01.mymovies.client.view.Menu;
+
 public class MyMovieClient {
-	private String         id;
-	private PrintWriter    out;
-	private BufferedReader in;
+	private String id;
+	private ServerCommunication communication;
+	private Socket socket;
 
 	public MyMovieClient() {
-		this.id  = UUID.randomUUID().toString();
+		this.id = UUID.randomUUID().toString();
 	}
 
 	public static void main(String[] args) {
 		MyMovieClient movieClient = new MyMovieClient();
 		movieClient.connect2Server();
+		try {
+			movieClient.startUI();
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void startUI() throws IOException {
+		Menu menu = new Menu.Builder().title("Babür Hoca'nın Filmleri").body("IMDB verilerinden oluşturulmuştur")
+				.build();
+		menu.addMenu(1, "Artistin filmleri");
+		menu.addMenu(2, "Yılın Filimleri");
+		menu.addMenu(80, "CSV'leri yükle");
+		menu.addMenu(99, "Programdan çık");
+		int selection = -1;
+		while (selection != 99) {
+			selection = menu.show().readInteger();
+			this.processSelection(selection);
+		}
+	}
+
+	private void processSelection(int selection) throws IOException {
+		switch (selection) {
+		case 1: {
+			String reply = communication.askForActorsMovies("Ingmar Bergman");
+			this.showReply(reply);
+			break;
+		}
+		case 2: {
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Lütfen bir yıl giriniz: ");
+			String reply = communication.ask4MoviesInYear(sc.nextLine());
+			sc.close();
+			this.showReply(reply);
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + selection);
+		}
+	}
+
+	private void showReply(String reply) {
+		
+//		reply = reply.replaceAll("|", "\\n");
+		
+		StringTokenizer tokenizer = new StringTokenizer(reply, "|");
+		int cnt = 1;
+		while (tokenizer.hasMoreElements()) {
+			String token = (String) tokenizer.nextElement();
+			System.out.printf("%03d - %s\n", cnt++, token);
+		}
 	}
 
 	private void connect2Server() {
-		try (Socket socket = new Socket("localhost", 4711)) {
-			this.out = new PrintWriter(socket.getOutputStream(), true);
-			this.in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-			Scanner sc = new Scanner(System.in);
-
-			boolean waitForServer = true;
-
-			while (waitForServer) {
-				waitForServer = this.introduce();
-				if (waitForServer) {
-					System.out.println("Sunucu verileri y�kl�yor... ");
-					try {
-						Thread.sleep(10000);
-					}
-					catch (InterruptedException ex) {
-						ex.printStackTrace();
-					}
-				}
-			}
-
-			String line = "FILMS:Ingmar Bergman";
-			out.println(line);
-			out.flush();
-			System.out.println("Server replied " + in.readLine());
-			
-			
-			line = "YEAR:" + sc.nextLine();
-			out.println(line);
-			out.flush();
-			System.out.println("Server replied " + in.readLine());
-			
-			sc.close();
+		try {
+			this.socket = new Socket("localhost", 4711);
+			this.communication = new ServerCommunication(this.socket);
+			communication.introduceClient(this.id);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private boolean introduce() throws IOException {
-		out.println("INTR:" + this.id);
-		out.flush();
-		String answer = in.readLine();
-		System.out.println(">>>" + answer);
-		if (answer.startsWith("WAIT"))
-			return true;
-		else
-			return false;
 	}
 }
