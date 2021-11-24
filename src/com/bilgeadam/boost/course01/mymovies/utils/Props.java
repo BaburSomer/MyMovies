@@ -40,6 +40,10 @@ public class Props {
 		return this.props;
 	}
 	
+	public String getProperty(String key) {
+		return (String)this.getProperties().get(key);
+	}
+	
 	public String getNamesDataFile() {
 		return this.getProperties().getProperty("NAMES_DATA_FILE");
 	}

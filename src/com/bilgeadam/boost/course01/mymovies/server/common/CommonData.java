@@ -42,9 +42,9 @@ public class CommonData {
 
 	public void loadPropertiesFile(String[] args) {
 		if (args.length == 0) {
-			// programýn çalýþtýðý lokasyonu bulmak için. Her program muhakkak bir Thread
-			// içinde çalýþýr. Thread'in meta-bilgileri üzerinden nerede
-			// çalýþtýðýný sorgulayabilirsiniz. Sonuçta ilk arguman olarak
+			// programÄ±n Ã§alÄ±ÅŸacaÄŸÄ± lokasyonu bulmak iÃ§in. Her program muhakkak bir Thread
+			// iï¿½inde ï¿½alï¿½ï¿½ï¿½r. Thread'in meta-bilgileri ï¿½zerinden nerede
+			// ï¿½alï¿½ï¿½tï¿½ï¿½ï¿½nï¿½ sorgulayabilirsiniz. Sonuï¿½ta ilk arguman olarak
 			// server.properties'in path bilgisi ikinci olarak da server.properties ismini
 			// veriyoruz
 			Props.getInstance().setPropsFilePath(
@@ -225,8 +225,8 @@ public class CommonData {
 	}
 
 	public void addMovie(Movie movie) {
-		this.getMovies().put(movie.getID(), movie);  //asýl movie listesi. Tüm movie bilgilerini içeriyor
-		this.addMovieToYear(movie);					// yýllara göre movie'leri gruplandýrarak sakladýðýmýz alternatif liste TreeMap<Integer, ArrayList<String>> 
+		this.getMovies().put(movie.getID(), movie);  //asï¿½l movie listesi. Tï¿½m movie bilgilerini iï¿½eriyor
+		this.addMovieToYear(movie);					// yï¿½llara gï¿½re movie'leri gruplandï¿½rarak sakladï¿½ï¿½ï¿½mï¿½z alternatif liste TreeMap<Integer, ArrayList<String>> 
 	}
 
 	private TreeMap<Integer, ArrayList<String>> getMoviesByYear() {
@@ -237,10 +237,10 @@ public class CommonData {
 	}
 	
 	public void addMovieToYear(Movie movie) {
-		 ArrayList<String> yearsMovies = this.getMoviesByYear().get(movie.getStartYear());  // lazy get treemap arkasýndan da get yýl film listesi
-		 if (yearsMovies == null) {															// EÐER O YIL ÝÇÝN HÝÇ FÝLM EKLENMEDÝ ÝSE
-			 yearsMovies = new ArrayList<>();												// yýl için yeni boþ bir liste oluþturduk
-			 this.getMoviesByYear().put(movie.getStartYear(), yearsMovies);					// yýl için boþ arraylist'i treemap'e ekledik
+		 ArrayList<String> yearsMovies = this.getMoviesByYear().get(movie.getStartYear());  // lazy get treemap arkasï¿½ndan da get yï¿½l film listesi
+		 if (yearsMovies == null) {															// Eï¿½ER O YIL ï¿½ï¿½ï¿½N Hï¿½ï¿½ Fï¿½LM EKLENMEDï¿½ ï¿½SE
+			 yearsMovies = new ArrayList<>();												// yï¿½l iï¿½in yeni boï¿½ bir liste oluï¿½turduk
+			 this.getMoviesByYear().put(movie.getStartYear(), yearsMovies);					// yï¿½l iï¿½in boï¿½ arraylist'i treemap'e ekledik
 		 }
 		 yearsMovies.add(movie.getID());													// arraylist'e filmi ekledik
 	}

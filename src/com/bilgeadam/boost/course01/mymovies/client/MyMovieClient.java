@@ -64,9 +64,6 @@ public class MyMovieClient {
 	}
 
 	private void showReply(String reply) {
-		
-//		reply = reply.replaceAll("|", "\\n");
-		
 		StringTokenizer tokenizer = new StringTokenizer(reply, "|");
 		int cnt = 1;
 		while (tokenizer.hasMoreElements()) {
