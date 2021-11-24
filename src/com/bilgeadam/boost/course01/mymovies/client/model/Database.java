@@ -9,13 +9,35 @@ import java.sql.Statement;
 
 import com.bilgeadam.boost.course01.mymovies.client.ClientProperties;
 
-public class ImportData {
+public class Database {
+	private static Database instance;
+	private Connection      connection;
 
-	public ImportData() {
+	private Database() {
 		super();
 	}
 
-	public static boolean isDatabaseInitialized() {
+	public static Database getInstance() {
+		if (Database.instance == null) {
+			Database.instance = new Database();
+		}
+		return Database.instance;
+	}
+
+	public Connection getConnection() {
+		if (this.connection == null) {
+			try {
+				this.connection = DriverManager.getConnection(ClientProperties.getInstance().getDbURL());
+			}
+			catch (SQLException ex) {
+				ex.printStackTrace();
+				System.exit(-10);
+			}
+		}
+		return this.connection;
+	}
+
+	public boolean isInitialized() {
 		final String query = "SELECT * FROM pg_database WHERE datname=?;";
 		try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/", "postgres", "root")) {
 			PreparedStatement st = conn.prepareStatement(query);
@@ -33,9 +55,8 @@ public class ImportData {
 		return false;
 	}
 
-	public static boolean isDataLoaded() {
-		try (Connection conn = DatabaseConnection.getInstance().getConnection();
-				Statement stmt = conn.createStatement();) {
+	public boolean isLoaded() {
+		try (Connection conn = Database.getInstance().getConnection(); Statement stmt = conn.createStatement();) {
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM movies;");
 			rs.next();
 			int count = rs.getInt(1);
@@ -47,27 +68,4 @@ public class ImportData {
 		return false;
 	}
 
-	public boolean importMovies() {
-		try (Connection conn = DatabaseConnection.getInstance().getConnection();
-				Statement stmt = conn.createStatement();) {
-//			return stmt.execute("COPY movies FROM '" + ClientProperties.getInstance().getMoviesCSV() + "' DELIMITER ',' CSV HEADER");
-		}
-		catch (Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-		
-		return false;
-	}
-	
-	public boolean importTags() {
-		try (Connection conn = DatabaseConnection.getInstance().getConnection();
-				Statement stmt = conn.createStatement();) {
-//			return stmt.execute("COPY movies FROM '" + ClientProperties.getInstance().getMoviesCSV() + "' DELIMITER ',' CSV HEADER");
-		}
-		catch (Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-		
-		return false;
-	}
 }

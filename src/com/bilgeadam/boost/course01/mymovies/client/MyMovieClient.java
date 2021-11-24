@@ -7,21 +7,22 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import com.bilgeadam.boost.course01.mymovies.client.communication.ServerCommunication;
-import com.bilgeadam.boost.course01.mymovies.client.model.ImportData;
+import com.bilgeadam.boost.course01.mymovies.client.model.Database;
+import com.bilgeadam.boost.course01.mymovies.client.model.Data;
 import com.bilgeadam.boost.course01.mymovies.client.view.Menu;
 import com.bilgeadam.boost.course01.mymovies.database.DatabaseSetup;
 
 public class MyMovieClient {
-	private String id;
+	private String              id;
 	private ServerCommunication communication;
-	private Socket socket;
+	private Socket              socket;
 
 	public MyMovieClient() {
 		this.id = UUID.randomUUID().toString();
 	}
 
 	public static void main(String[] args) {
-		
+
 		MyMovieClient movieClient = new MyMovieClient();
 		movieClient.checkDatabase();
 		movieClient.connect2Server();
@@ -34,18 +35,18 @@ public class MyMovieClient {
 	}
 
 	private void checkDatabase() {
-		if (!ImportData.isDatabaseInitialized()) {
+		if (!Database.getInstance().isInitialized()) {
 			System.err.println("Database is not initialized. Creating it...");
-			 DatabaseSetup setup = new DatabaseSetup();
-			 setup.execute();
+			 new DatabaseSetup().execute();
 		}
 		else {
 			System.out.println("Database initialized");
-			if (ImportData.isDataLoaded()) {
+			if (Database.getInstance().isLoaded()) {
 				System.out.println("Data is loaded");
 			}
 			else {
 				System.out.println("Data is not loaded");
+				Data.parse();
 			}
 		}
 	}
@@ -86,7 +87,7 @@ public class MyMovieClient {
 
 	private void showReply(String reply) {
 		StringTokenizer tokenizer = new StringTokenizer(reply, "|");
-		int cnt = 1;
+		int             cnt       = 1;
 		while (tokenizer.hasMoreElements()) {
 			String token = (String) tokenizer.nextElement();
 			System.out.printf("%03d - %s\n", cnt++, token);
@@ -95,7 +96,7 @@ public class MyMovieClient {
 
 	private void connect2Server() {
 		try {
-			this.socket = new Socket("localhost", 4711);
+			this.socket        = new Socket("localhost", 4711);
 			this.communication = new ServerCommunication(this.socket);
 			communication.introduceClient(this.id);
 		}
