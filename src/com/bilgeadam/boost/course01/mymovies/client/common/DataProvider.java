@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import com.bilgeadam.boost.course01.mymovies.client.model.Movie;
-import com.bilgeadam.boost.course01.mymovies.client.model.MovieType;
+import com.bilgeadam.boost.course01.mymovies.client.model.Genre;
 import com.bilgeadam.boost.course01.mymovies.client.model.Tag;
 import com.bilgeadam.boost.course01.mymovies.client.model.User;
 
 public class DataProvider {
 	private static DataProvider        instance;
 	private TreeMap<Long, Movie>       movies;
-	private HashMap<String, MovieType> types;
+	private HashMap<String, Genre> types;
 	private HashMap<String, Tag>       tags;
 	private HashMap<Long, User>        users;
 
@@ -33,7 +33,7 @@ public class DataProvider {
 		return this.movies;
 	}
 
-	public HashMap<String, MovieType> getTypes() {
+	public HashMap<String, Genre> getTypes() {
 		if (this.types == null) {
 			this.types = new HashMap<>();
 		}

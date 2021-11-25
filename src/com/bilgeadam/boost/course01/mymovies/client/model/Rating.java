@@ -36,4 +36,17 @@ public class Rating {
 		movie.addRating(userId, aRating);
 	}
 
+	public double getRating() {
+		return this.rating;
+	}
+
+	public Timestamp getRated() {
+		return this.rated;
+	}
+
+	@Override
+	public String toString() {
+		return "Rating [rating=" + this.rating + ", rated=" + this.rated + "]";
+	}
+
 }

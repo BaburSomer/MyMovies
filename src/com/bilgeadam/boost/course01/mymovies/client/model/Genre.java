@@ -1,11 +1,11 @@
 package com.bilgeadam.boost.course01.mymovies.client.model;
 
-public class MovieType {
+public class Genre {
 	private static long lastId = 1;;
 	private long        id;
 	private String      name;
 
-	public MovieType(String name) {
+	public Genre(String name) {
 		this.name = name;
 		this.id   = lastId++;
 	}

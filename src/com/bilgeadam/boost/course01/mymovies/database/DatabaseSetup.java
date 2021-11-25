@@ -255,3 +255,12 @@ import java.sql.Statement;
 	}
 	
 }
+
+ /*
+ CREATE view years_movies_view AS
+ select g.genre, m.name from movies m, genres g, movie_genres mg where 
+ 			m.year=2000 AND mg.movie_id=m.id AND 
+ 			mg.genre_id=g.id AND
+ 			g.genre IN ('ANIMATION', 'CRIME', 'COMEDY')
+ 			GROUP BY g.genre, m.name
+ */

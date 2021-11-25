@@ -51,7 +51,7 @@ public class Tag {
 		}
 
 		Movie movie = DataProvider.getInstance().getMovies().get(movieId);
-		movie.addTag(tag, timeStamp);
+		movie.addTag(tag, timeStamp, userId);
 	}
 
 }

@@ -12,19 +12,21 @@ public class Movie {
 	private String                   name;
 	private int                      year;
 	private String                   imdb;
-	private ArrayList<Long>          types;
-	private HashMap<Long, Timestamp> tags;    // tagID, Timestamp
-	private HashMap<Long, Rating>    ratings; // userId, Rating
+	private ArrayList<Long>          genres;
+	private HashMap<Long, Timestamp> tags;         // tagID, Timestamp
+	private HashMap<Long, Long>      taggingUsers; // tagID, userid
+	private HashMap<Long, Rating>    ratings;      // userId, Rating
 
 	public Movie(long id, String name, int year) {
 		super();
-		this.id      = id;
-		this.name    = name;
-		this.year    = year;
-		this.imdb    = null;
-		this.types   = new ArrayList<>();
-		this.tags    = new HashMap<>();
-		this.ratings = new HashMap<>();
+		this.id           = id;
+		this.name         = name;
+		this.year         = year;
+		this.imdb         = null;
+		this.genres       = new ArrayList<>();
+		this.tags         = new HashMap<>();
+		this.taggingUsers = new HashMap<>();
+		this.ratings      = new HashMap<>();
 	}
 
 	public long getId() {
@@ -47,22 +49,27 @@ public class Movie {
 		this.imdb = id;
 	}
 
-	public void addType(long id) {
-		this.types.add(id);
+	public void addGenre(long id) {
+		this.genres.add(id);
 	}
 
-	public ArrayList<Long> getTypes() {
-		return this.types;
+	public ArrayList<Long> getGenres() {
+		return this.genres;
 	}
 
-	public void addTag(Tag tag, Timestamp timestamp) {
+	public void addTag(Tag tag, Timestamp timestamp, long userId) {
 		this.tags.put(tag.getId(), timestamp);
+		this.taggingUsers.put(tag.getId(), userId);
 	}
 
 	public HashMap<Long, Timestamp> getTags() {
 		return this.tags;
 	}
 
+	public HashMap<Long, Long> getTagggingUsers() {
+		return this.taggingUsers;
+	}
+	
 	@Override
 	public String toString() {
 		return "Movie [id=" + this.id + ", name=" + this.name + ", year=" + this.year + ", imdb=" + this.imdb + "]";
@@ -76,10 +83,10 @@ public class Movie {
 		String genres = line.substring(lastCommaPos + 1);
 		String name   = line.substring(firstCommaPos + 1, lastCommaPos);
 		int    pos    = name.lastIndexOf("(");
-		
+
 		int year = 0;
 		try {
-			year   = Integer.parseInt(name.substring(pos + 1, name.lastIndexOf(")")));
+			year = Integer.parseInt(name.substring(pos + 1, name.lastIndexOf(")")));
 			name = name.substring(0, pos).trim();
 		}
 		catch (Exception ex) {
@@ -90,16 +97,16 @@ public class Movie {
 
 		StringTokenizer tokenizer = new StringTokenizer(genres, "|");
 		while (tokenizer.hasMoreElements()) {
-			String    genre = ((String) tokenizer.nextToken()).toUpperCase();
-			MovieType obj   = DataProvider.getInstance().getTypes().get(genre);
+			String genre = ((String) tokenizer.nextToken()).toUpperCase();
+			Genre  obj   = DataProvider.getInstance().getTypes().get(genre);
 
 			if (obj == null) {
-				MovieType type = new MovieType(genre);
+				Genre type = new Genre(genre);
 				DataProvider.getInstance().getTypes().put(genre, type);
-				movie.addType(type.getId());
+				movie.addGenre(type.getId());
 			}
 			else {
-				movie.addType(obj.getId());
+				movie.addGenre(obj.getId());
 			}
 		}
 		DataProvider.getInstance().getMovies().put(movie.getId(), movie);
@@ -122,5 +129,9 @@ public class Movie {
 
 	public void addRating(long userId, Rating aRating) {
 		this.ratings.put(userId, aRating);
+	}
+
+	public HashMap<Long, Rating> getRatings() {
+		return this.ratings;
 	}
 }

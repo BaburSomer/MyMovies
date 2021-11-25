@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import com.bilgeadam.boost.course01.mymovies.client.communication.ServerCommunication;
+import com.bilgeadam.boost.course01.mymovies.client.controller.YearsMovies;
 import com.bilgeadam.boost.course01.mymovies.client.model.Database;
 import com.bilgeadam.boost.course01.mymovies.client.model.Data;
 import com.bilgeadam.boost.course01.mymovies.client.view.Menu;
@@ -16,6 +17,7 @@ public class MyMovieClient {
 	private String              id;
 	private ServerCommunication communication;
 	private Socket              socket;
+	private Scanner sc;
 
 	public MyMovieClient() {
 		this.id = UUID.randomUUID().toString();
@@ -53,10 +55,14 @@ public class MyMovieClient {
 	}
 
 	private void startUI() throws IOException {
+		sc = new Scanner(System.in);
 		Menu menu = new Menu.Builder().title("Babür Hoca'nın Filmleri").body("IMDB verilerinden oluşturulmuştur")
 				.build();
 		menu.addMenu(1, "Artistin filmleri");
-		menu.addMenu(2, "Yılın Filimleri");
+		menu.addMenu(2, "Yıla Göre Film Listesi");
+		menu.addMenu(3, "Türe Göre Film Listesi");
+		menu.addMenu(4, "Film Puanlaması");
+		menu.addMenu(5, "Taglere Göre Film Listesi");
 		menu.addMenu(80, "CSV'leri yükle");
 		menu.addMenu(99, "Programdan çık");
 		int selection = -1;
@@ -64,26 +70,29 @@ public class MyMovieClient {
 			selection = menu.show().readInteger();
 			this.processSelection(selection);
 		}
+		sc.close();
 	}
 
 	private void processSelection(int selection) throws IOException {
 		switch (selection) {
 		case 1: {
-			String reply = communication.askForActorsMovies("Ingmar Bergman");
+			System.out.println("Lütfen bir artist adı giriniz: ");
+			String reply = communication.askForActorsMovies(sc.nextLine());
 			this.showReply(reply);
 			break;
 		}
 		case 2: {
-			Scanner sc = new Scanner(System.in);
+			YearsMovies ym = new YearsMovies();
 			System.out.println("Lütfen bir yıl giriniz: ");
-			String reply = communication.ask4MoviesInYear(sc.nextLine());
-			sc.close();
-			this.showReply(reply);
+			ym.getMoviesByYear(sc.nextInt()).toString();
+			sc.nextLine();
+			System.out.println(ym.toString());
 			break;
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + selection);
 		}
+		new Menu.Builder().body("Devam etmek için bir tuşa basınız...").build().show().readString();
 	}
 
 	private void showReply(String reply) {
