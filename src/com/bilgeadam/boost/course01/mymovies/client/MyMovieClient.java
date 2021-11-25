@@ -47,6 +47,7 @@ public class MyMovieClient {
 			else {
 				System.out.println("Data is not loaded");
 				Data.parse();
+				Data.load();
 			}
 		}
 	}

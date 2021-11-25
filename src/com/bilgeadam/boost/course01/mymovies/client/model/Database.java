@@ -24,8 +24,8 @@ public class Database {
 		return Database.instance;
 	}
 
-	public Connection getConnection() {
-		if (this.connection == null) {
+	public Connection getConnection() throws SQLException {
+		if (this.connection == null || this.connection.isClosed()) {
 			try {
 				this.connection = DriverManager.getConnection(ClientProperties.getInstance().getDbURL());
 			}
@@ -34,6 +34,7 @@ public class Database {
 				System.exit(-10);
 			}
 		}
+		
 		return this.connection;
 	}
 

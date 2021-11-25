@@ -6,25 +6,82 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.bilgeadam.boost.course01.mymovies.client.ClientProperties;
-import com.bilgeadam.boost.course01.mymovies.utils.Props;
+import com.bilgeadam.boost.course01.mymovies.client.common.DataProvider;
 
 public class Data {
-	private static LinkedList<Movie>          movies;
-	private static HashMap<String, MovieType> types;
 
 	public Data() {
 		super();
-		Data.movies = new LinkedList<>();
-		Data.types  = new HashMap<>();
 	}
 
 	public static void parse() {
+		parseMovies();
+		parseLinks();
+		parseTags();
+		parseRatings();
+	}
+
+	private static void parseTags() {
+		File file;
+		file = new File(ClientProperties.getInstance().getTagsCSV());
+		try (FileReader fR = new FileReader(file); BufferedReader bR = new BufferedReader(fR);) {
+			while (true) {
+				String line = bR.readLine();
+				if (line == null)
+					break;
+				if (line.startsWith("userId"))
+					continue;
+				Tag.parse(line);
+			}
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void parseRatings() {
+		File file;
+		file = new File(ClientProperties.getInstance().getRatingsCSV());
+		try (FileReader fR = new FileReader(file); BufferedReader bR = new BufferedReader(fR);) {
+			while (true) {
+				String line = bR.readLine();
+				if (line == null)
+					break;
+				if (line.startsWith("userId"))
+					continue;
+				Rating.parse(line);
+			}
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static void parseLinks() {
+		File file;
+		file = new File(ClientProperties.getInstance().getLinksCSV());
+		try (FileReader fR = new FileReader(file); BufferedReader bR = new BufferedReader(fR);) {
+			while (true) {
+				String line = bR.readLine();
+				if (line == null)
+					break;
+				if (line.startsWith("movieId"))
+					continue;
+				Movie.parseLink(line);
+			}
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private static void parseMovies() {
 		File file = new File(ClientProperties.getInstance().getMoviesCSV());
 
 		try (FileReader fR = new FileReader(file); BufferedReader bR = new BufferedReader(fR);) {
@@ -34,38 +91,13 @@ public class Data {
 					break;
 				if (line.startsWith("movieId"))
 					continue;
-
-				int firstCommaPos = line.indexOf(",");
-				int lastCommaPos  = line.lastIndexOf(",");
-
-				long   id     = Long.parseLong(line.substring(0, firstCommaPos));
-				String genres = line.substring(lastCommaPos + 1);
-				String name   = line.substring(firstCommaPos + 1, lastCommaPos);
-				int    pos    = name.lastIndexOf("(");
-				int    year   = Integer.parseInt(name.substring(pos + 1, name.lastIndexOf(")")));
-				name = name.substring(0, pos).trim();
-				Movie movie = new Movie(id, name, year);
-
-				StringTokenizer tokenizer = new StringTokenizer(genres, "|");
-				while (tokenizer.hasMoreElements()) {
-					String genre = ((String) tokenizer.nextToken()).toUpperCase();
-					Object obj = Data.types.get(genre);
-					if (obj == null) {
-						MovieType type = new MovieType(genre);
-						Data.types.put(genre, type);
-					}
-					movie.addType(genre);
-				}
-
-				Data.movies.add(movie);
+				Movie.parse(line);
 			}
 		}
 		catch (FileNotFoundException ex) {
-			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 		catch (IOException ex) {
-			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 	}
@@ -90,5 +122,60 @@ public class Data {
 		}
 
 		return false;
+	}
+
+	public static void load() {
+		loadMovies();
+		loadTypes();
+		loadTags();
+		loadUsers();
+	}
+
+	private static void loadMovies() {
+		Set<Long> keys = DataProvider.getInstance().getMovies().keySet();
+		String query = "INSERT INTO movies (id, name, year, imdb_id) VALUES (?, ?, ?, ?)";
+		try (Connection conn = Database.getInstance().getConnection(); PreparedStatement stmt = conn.prepareStatement(query);) {
+			for (Iterator<Long> iterator = keys.iterator(); iterator.hasNext();) {
+				Movie movie = DataProvider.getInstance().getMovie(iterator.next());
+				stmt.setLong(1, movie.getId());
+				stmt.setString(2, movie.getName());
+				stmt.setInt(3, movie.getYear());
+				stmt.setString(4, movie.getImdb());
+				stmt.execute();
+			}
+		}
+		catch (Exception ex) {
+			System.err.println(ex.getMessage());
+		}
+	}
+	
+	private static void loadTypes() {
+		int cnt = 0;
+		Set<String> keys = DataProvider.getInstance().getTypes().keySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			System.out.println(DataProvider.getInstance().getTypes().get(iterator.next()));
+			if (++cnt > 100)
+				break;
+		}
+	}
+	
+	private static void loadTags() {
+		int cnt = 0;
+		Set<String> keys = DataProvider.getInstance().getTags().keySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			System.out.println(DataProvider.getInstance().getTags().get(iterator.next()));
+			if (++cnt > 100)
+				break;
+		}
+	}
+	
+	private static void loadUsers() {
+		int cnt = 0;
+		Set<Long> keys = DataProvider.getInstance().getUsers().keySet();
+		for (Iterator<Long> iterator = keys.iterator(); iterator.hasNext();) {
+			System.out.println(DataProvider.getInstance().getUsers().get(iterator.next()));
+			if (++cnt > 100)
+				break;
+		}
 	}
 }

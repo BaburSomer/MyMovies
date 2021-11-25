@@ -33,8 +33,8 @@ import java.sql.Statement;
 			this.createTableUsers(stmt);
 			this.createTableTags(stmt);
 			this.createTableMovieTags(stmt);
-			this.createTableTypes(stmt);
-			this.createTableMovieTypes(stmt);
+			this.createTableGenres(stmt);
+			this.createTableMovieGenres(stmt);
 			this.createTableMovieRatings(stmt);
 		}
 		catch (SQLException ex) {
@@ -53,10 +53,10 @@ import java.sql.Statement;
 				+ " "
 				+ "CREATE TABLE IF NOT EXISTS movie_ratings "
 				+ "( "
-				+ "    movie_id integer NOT NULL, "
-				+ "    user_id integer NOT NULL, "
+				+ "    movie_id bigint NOT NULL, "
+				+ "    user_id bigint NOT NULL, "
 				+ "    rating real NOT NULL, "
-				+ "    rated_at bigint NOT NULL, "
+				+ "    rated_at timestamp WITHOUT TIME ZONE NOT NULL, "
 				+ "    PRIMARY KEY (movie_id, user_id), "
 				+ "    CONSTRAINT movie_id FOREIGN KEY (movie_id) "
 				+ "        REFERENCES movies (id) MATCH SIMPLE "
@@ -83,10 +83,10 @@ import java.sql.Statement;
 				+ " "
 				+ "CREATE TABLE IF NOT EXISTS movie_tags "
 				+ "( "
-				+ "    movie_id integer NOT NULL, "
-				+ "    user_id integer NOT NULL, "
-				+ "    tag_id integer NOT NULL, "
-				+ "    tagged_at bigint NOT NULL, "
+				+ "    movie_id bigint NOT NULL, "
+				+ "    user_id bigint NOT NULL, "
+				+ "    tag_id bigint NOT NULL, "
+				+ "    tagged_at timestamp WITHOUT TIME ZONE  NOT NULL, "
 				+ "    CONSTRAINT movie_tags_pkey PRIMARY KEY (movie_id, user_id, tag_id), "
 				+ "    CONSTRAINT movie_id FOREIGN KEY (movie_id) "
 				+ "        REFERENCES movies (id) MATCH SIMPLE "
@@ -115,56 +115,56 @@ import java.sql.Statement;
 		System.out.println("Table MOVIE_TAGS creation "  + (success==0?"successful":"failed"));
 	}
 	
-	private void createTableMovieTypes(Statement stmt) throws SQLException  {
-		int success = stmt.executeUpdate("DROP TABLE IF EXISTS movie_types CASCADE; "
+	private void createTableMovieGenres(Statement stmt) throws SQLException  {
+		int success = stmt.executeUpdate("DROP TABLE IF EXISTS movie_genres CASCADE; "
 				+ " "
-				+ "CREATE TABLE IF NOT EXISTS movie_types "
+				+ "CREATE TABLE IF NOT EXISTS movie_genres "
 				+ "( "
-				+ "    movie_id integer NOT NULL, "
-				+ "    type_id integer NOT NULL, "
-				+ "    CONSTRAINT movie_types_pkey PRIMARY KEY (movie_id, type_id), "
+				+ "    movie_id bigint NOT NULL, "
+				+ "    genre_id bigint NOT NULL, "
+				+ "    CONSTRAINT movie_genres_pkey PRIMARY KEY (movie_id, genre_id), "
 				+ "    CONSTRAINT movie_id FOREIGN KEY (movie_id) "
 				+ "        REFERENCES movies (id) MATCH SIMPLE "
 				+ "        ON UPDATE NO ACTION "
 				+ "        ON DELETE NO ACTION, "
-				+ "    CONSTRAINT type_id FOREIGN KEY (type_id) "
-				+ "        REFERENCES types (id) MATCH SIMPLE "
+				+ "    CONSTRAINT genre_id FOREIGN KEY (genre_id) "
+				+ "        REFERENCES genres (id) MATCH SIMPLE "
 				+ "        ON UPDATE NO ACTION "
 				+ "        ON DELETE NO ACTION "
 				+ ") "
 				+ " "
 				+ "TABLESPACE pg_default; "
 				+ " "
-				+ "ALTER TABLE movie_types "
+				+ "ALTER TABLE movie_genres "
 				+ "    OWNER to postgres; "
 				+ " "
-				+ "GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE movie_types TO mmdb; "
+				+ "GRANT DELETE, INSERT, SELECT, UPDATE ON TABLE movie_genres TO mmdb; "
 				+ " "
-				+ "GRANT ALL ON TABLE movie_types TO postgres; "
+				+ "GRANT ALL ON TABLE movie_genres TO postgres; "
 				+ "");
 		
-		System.out.println("Table MOVIE_TYPES creation "  + (success==0?"successful":"failed"));
+		System.out.println("Table MOVIE_GENRES creation "  + (success==0?"successful":"failed"));
 	}
 	
-	private void createTableTypes(Statement stmt) throws SQLException  {
-		int success = stmt.executeUpdate("DROP TABLE IF EXISTS types CASCADE; "
-				+ "CREATE TABLE IF NOT EXISTS types "
+	private void createTableGenres(Statement stmt) throws SQLException  {
+		int success = stmt.executeUpdate("DROP TABLE IF EXISTS genres CASCADE; "
+				+ "CREATE TABLE IF NOT EXISTS genres "
 				+ "( "
-				+ "    id integer NOT NULL, "
-				+ "    type text NOT NULL, "
+				+ "    id bigint NOT NULL, "
+				+ "    genre text NOT NULL, "
 				+ "    PRIMARY KEY (id) "
 				+ "); "
-				+ "ALTER TABLE types OWNER to postgres; "
-				+ "GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE types TO mmdb;");
+				+ "ALTER TABLE genres OWNER to postgres; "
+				+ "GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE genres TO mmdb;");
 		
-		System.out.println("Table TYPES creation "  + (success==0?"successful":"failed"));
+		System.out.println("Table GENRES creation "  + (success==0?"successful":"failed"));
 	}
 	
 	private void createTableUsers(Statement stmt) throws SQLException  {
 		int success = stmt.executeUpdate("DROP TABLE IF EXISTS users CASCADE; "
 				+ "CREATE TABLE IF NOT EXISTS users "
 				+ "( "
-				+ "    id integer NOT NULL, "
+				+ "    id bigint NOT NULL, "
 				+ "    name text NOT NULL, "
 				+ "    PRIMARY KEY (id) "
 				+ "); "
@@ -178,7 +178,7 @@ import java.sql.Statement;
 		int success = stmt.executeUpdate("DROP TABLE IF EXISTS tags CASCADE; "
 				+ "CREATE TABLE IF NOT EXISTS tags "
 				+ "( "
-				+ "    id integer NOT NULL, "
+				+ "    id bigint NOT NULL, "
 				+ "    tag text NOT NULL, "
 				+ "    PRIMARY KEY (id) "
 				+ "); "
@@ -192,7 +192,7 @@ import java.sql.Statement;
 		int success = stmt.executeUpdate("DROP TABLE IF EXISTS movies CASCADE; "
 				+ "CREATE TABLE IF NOT EXISTS movies "
 				+ "( "
-				+ "    id integer NOT NULL, "
+				+ "    id bigint NOT NULL, "
 				+ "    name text NOT NULL, "
 				+ "    year integer NOT NULL, "
 				+ "    imdb_id text, "
