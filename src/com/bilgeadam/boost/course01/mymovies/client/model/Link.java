@@ -1,7 +1,7 @@
 package com.bilgeadam.boost.course01.mymovies.client.model;
 
 public class Link {
-	private static long idCnt = 1;
+	private static long idCnt = 34;
 	private long   id;
 	private String imdb;
 	private String tmdb;

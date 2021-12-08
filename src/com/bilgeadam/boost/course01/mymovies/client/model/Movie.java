@@ -45,8 +45,8 @@ public class Movie {
 		return this.link;
 	}
 
-	public void setLink(String indb, String tmdb) {
-		this.link = new Link(tmdb, tmdb);
+	public void setLink(String imdb, String tmdb) {
+		this.link = new Link(imdb, tmdb);
 	}
 
 	public void addGenre(long id) {
@@ -132,11 +132,27 @@ public class Movie {
 	}
 
 	public String getTmdb() {
-		return this.getLink().getTmdb();
+		Link link = this.getLink();
+		if (link != null)
+			return this.getLink().getTmdb();
+		else 
+			return "";
 	}
 
 	public String getImdb() {
-		return this.getLink().getImdb();
+		Link link = this.getLink();
+		if (link != null)
+			return this.getLink().getImdb();
+		else 
+			return "";
+	}
+	
+	public long getLinkId() {
+		Link link = this.getLink();
+		if (link != null)
+			return this.getLink().getId();
+		else 
+			return 0L;
 	}
 	
 	@Override

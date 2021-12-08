@@ -140,7 +140,7 @@ public class Data {
 
 	private static void loadMovies() {
 		Set<Long> keys  = DataProvider.getInstance().getMovies().keySet();
-		String    query = "INSERT INTO movies (id, name, year, imdb_id) VALUES (?, ?, ?, ?)";
+		String    query = "INSERT INTO movies (id, name, year, link_id) VALUES (?, ?, ?, ?)";
 		try (Connection conn = Database.getInstance().getConnection();
 				PreparedStatement stmt = conn.prepareStatement(query);) {
 			for (Iterator<Long> iterator = keys.iterator(); iterator.hasNext();) {
@@ -148,7 +148,7 @@ public class Data {
 				stmt.setLong(1, movie.getId());
 				stmt.setString(2, movie.getName());
 				stmt.setInt(3, movie.getYear());
-				stmt.setString(4, movie.getImdb());
+				stmt.setLong(4, movie.getLinkId());
 				stmt.execute();
 			}
 		}
@@ -164,18 +164,20 @@ public class Data {
 				PreparedStatement stmt = conn.prepareStatement(query);) {
 			for (Iterator<Long> iterator = keys.iterator(); iterator.hasNext();) {
 				Movie movie = DataProvider.getInstance().getMovie(iterator.next());
-				Link link = movie.getLink();
-				stmt.setLong(1, link.getId());
-				stmt.setString(2, link.getImdb());
-				stmt.setString(3, link.getTmdb());
-				stmt.execute();
+				Link  link  = movie.getLink();
+				if (link != null) {
+					stmt.setLong(1, link.getId());
+					stmt.setString(2, link.getImdb());
+					stmt.setString(3, link.getTmdb());
+					stmt.execute();
+				}
 			}
 		}
 		catch (Exception ex) {
 			System.err.println(ex.getMessage());
 		}
 	}
-	
+
 	private static void loadGenres() {
 		Set<String> keys  = DataProvider.getInstance().getTypes().keySet();
 		String      query = "INSERT INTO genres (id, genre) VALUES (?, ?)";
@@ -256,14 +258,16 @@ public class Data {
 
 			for (Iterator<Long> iterator = movieKeys.iterator(); iterator.hasNext();) {
 				Movie                    movie        = DataProvider.getInstance().getMovies().get(iterator.next());
-				HashMap<Long, Timestamp> tags      = movie.getTags();                                            // tagID, Timestamp
-				HashMap<Long, Long>      taggingUsers = movie.getTagggingUsers();                                   // tagID, userID
+				HashMap<Long, Timestamp> tags         = movie.getTags();                                            // tagID,
+																													// Timestamp
+				HashMap<Long, Long>      taggingUsers = movie.getTagggingUsers();                                   // tagID,
+																													// userID
 
 				Set<Long> tagKeys = tags.keySet();
-				for (Iterator<Long> iterator2 = tagKeys.iterator(); iterator2.hasNext();) { 
-					Long   tagId = iterator2.next();  
-					Timestamp time = tags.get(tagId);
-					Long userId = taggingUsers.get(tagId);
+				for (Iterator<Long> iterator2 = tagKeys.iterator(); iterator2.hasNext();) {
+					Long      tagId  = iterator2.next();
+					Timestamp time   = tags.get(tagId);
+					Long      userId = taggingUsers.get(tagId);
 					stmt.setLong(1, movie.getId());
 					stmt.setLong(2, userId);
 					stmt.setLong(3, tagId);

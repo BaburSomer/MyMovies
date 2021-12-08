@@ -74,7 +74,7 @@ import java.sql.Statement;
 				+ "ALTER TABLE movie_ratings "
 				+ "    OWNER to postgres; "
 				+ " "
-				+ "GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE movie_ratings TO omdb;");
+				+ "GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE movie_ratings TO mmdb;");
 		
 		System.out.println("Table MOVIE_RATINGS creation "  + (success==0?"successful":"failed"));
 	}
@@ -211,7 +211,7 @@ import java.sql.Statement;
 				+ "    id bigint NOT NULL, "
 				+ "    name text NOT NULL, "
 				+ "    year integer NOT NULL, "
-				+ "    imdb_id text, "
+				+ "    link_id bigint, "
 				+ "    PRIMARY KEY (id) "
 				+ "); "
 				+ "ALTER TABLE movies OWNER to postgres; "
