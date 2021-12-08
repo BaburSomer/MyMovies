@@ -11,7 +11,7 @@ public class Movie {
 	private long                     id;
 	private String                   name;
 	private int                      year;
-	private String                   imdb;
+	private Link					 link;
 	private ArrayList<Long>          genres;
 	private HashMap<Long, Timestamp> tags;         // tagID, Timestamp
 	private HashMap<Long, Long>      taggingUsers; // tagID, userid
@@ -22,7 +22,7 @@ public class Movie {
 		this.id           = id;
 		this.name         = name;
 		this.year         = year;
-		this.imdb         = null;
+		this.link         = null;
 		this.genres       = new ArrayList<>();
 		this.tags         = new HashMap<>();
 		this.taggingUsers = new HashMap<>();
@@ -41,12 +41,12 @@ public class Movie {
 		return this.year;
 	}
 
-	public String getImdb() {
-		return this.imdb;
+	public Link getLink() {
+		return this.link;
 	}
 
-	public void setImdb(String id) {
-		this.imdb = id;
+	public void setLink(String indb, String tmdb) {
+		this.link = new Link(tmdb, tmdb);
 	}
 
 	public void addGenre(long id) {
@@ -70,11 +70,6 @@ public class Movie {
 		return this.taggingUsers;
 	}
 	
-	@Override
-	public String toString() {
-		return "Movie [id=" + this.id + ", name=" + this.name + ", year=" + this.year + ", imdb=" + this.imdb + "]";
-	}
-
 	public static void parse(String line) {
 		int firstCommaPos = line.indexOf(",");
 		int lastCommaPos  = line.lastIndexOf(",");
@@ -117,7 +112,8 @@ public class Movie {
 		try {
 			long   movieId = Long.parseLong(tokenizer.nextToken());
 			String imdbId  = tokenizer.nextToken();
-			DataProvider.getInstance().getMovie(movieId).setImdb(imdbId);
+			String tmdbId  = tokenizer.nextToken();
+			DataProvider.getInstance().getMovie(movieId).setLink(imdbId, tmdbId);
 		}
 		catch (NumberFormatException ex) {
 			System.err.println("Error while parsing movieId. Source: " + line);
@@ -133,5 +129,20 @@ public class Movie {
 
 	public HashMap<Long, Rating> getRatings() {
 		return this.ratings;
+	}
+
+	public String getTmdb() {
+		return this.getLink().getTmdb();
+	}
+
+	public String getImdb() {
+		return this.getLink().getImdb();
+	}
+	
+	@Override
+	public String toString() {
+		return "Movie [id=" + this.id + ", name=" + this.name + ", year=" + this.year + ", link=" + this.link
+				+ ", genres=" + this.genres + ", tags=" + this.tags + ", taggingUsers=" + this.taggingUsers
+				+ ", ratings=" + this.ratings + "]";
 	}
 }

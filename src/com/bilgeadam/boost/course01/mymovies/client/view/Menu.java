@@ -28,7 +28,7 @@ public class Menu {
 		this.menu          = build.menu;
 		this.listRow       = build.listRow;
 		this.icon          = build.icon;
-		in                 = new Scanner(System.in);
+		this.in                 = new Scanner(System.in);
 	}
 
 //	public static void main(String[] args) {
@@ -234,9 +234,12 @@ public class Menu {
 
 		public Builder() {
 			super();
-
 		}
 
+		public void setTitle() {
+//			cvxcvc
+		}
+		
 		public Builder title(String title) {
 			this.title = title;
 			return this;

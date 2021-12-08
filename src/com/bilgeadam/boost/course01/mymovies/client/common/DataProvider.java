@@ -11,7 +11,7 @@ import com.bilgeadam.boost.course01.mymovies.client.model.User;
 public class DataProvider {
 	private static DataProvider        instance;
 	private TreeMap<Long, Movie>       movies;
-	private HashMap<String, Genre> types;
+	private HashMap<String, Genre> 		types;
 	private HashMap<String, Tag>       tags;
 	private HashMap<Long, User>        users;
 

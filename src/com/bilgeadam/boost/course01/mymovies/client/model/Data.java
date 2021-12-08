@@ -129,6 +129,7 @@ public class Data {
 
 	public static void load() {
 		loadMovies();
+		loadLinks();
 		loadGenres();
 		loadTags();
 		loadUsers();
@@ -156,6 +157,25 @@ public class Data {
 		}
 	}
 
+	private static void loadLinks() {
+		Set<Long> keys  = DataProvider.getInstance().getMovies().keySet();
+		String    query = "INSERT INTO links (id, imdb, tmdb) VALUES (?, ?, ?)";
+		try (Connection conn = Database.getInstance().getConnection();
+				PreparedStatement stmt = conn.prepareStatement(query);) {
+			for (Iterator<Long> iterator = keys.iterator(); iterator.hasNext();) {
+				Movie movie = DataProvider.getInstance().getMovie(iterator.next());
+				Link link = movie.getLink();
+				stmt.setLong(1, link.getId());
+				stmt.setString(2, link.getImdb());
+				stmt.setString(3, link.getTmdb());
+				stmt.execute();
+			}
+		}
+		catch (Exception ex) {
+			System.err.println(ex.getMessage());
+		}
+	}
+	
 	private static void loadGenres() {
 		Set<String> keys  = DataProvider.getInstance().getTypes().keySet();
 		String      query = "INSERT INTO genres (id, genre) VALUES (?, ?)";

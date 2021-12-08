@@ -34,6 +34,7 @@ import java.sql.Statement;
 			this.createTableTags(stmt);
 			this.createTableMovieTags(stmt);
 			this.createTableGenres(stmt);
+			this.createTableLinks(stmt);
 			this.createTableMovieGenres(stmt);
 			this.createTableMovieRatings(stmt);
 		}
@@ -156,6 +157,21 @@ import java.sql.Statement;
 				+ "); "
 				+ "ALTER TABLE genres OWNER to postgres; "
 				+ "GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE genres TO mmdb;");
+		
+		System.out.println("Table GENRES creation "  + (success==0?"successful":"failed"));
+	}
+	
+	private void createTableLinks(Statement stmt) throws SQLException  {
+		int success = stmt.executeUpdate("DROP TABLE IF EXISTS links CASCADE; "
+				+ "CREATE TABLE IF NOT EXISTS links "
+				+ "( "
+				+ "    id bigint NOT NULL, "
+				+ "    imdb text NOT NULL, "
+				+ "    tmdb text NOT NULL, "
+				+ "    PRIMARY KEY (id) "
+				+ "); "
+				+ "ALTER TABLE links OWNER to postgres; "
+				+ "GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE links TO mmdb;");
 		
 		System.out.println("Table GENRES creation "  + (success==0?"successful":"failed"));
 	}
